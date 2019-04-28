@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.paysim.paysim.PaySim;
+import org.paysim.paysim.actors.Bank;
+import org.paysim.paysim.actors.Client;
+import org.paysim.paysim.actors.Merchant;
 import org.paysim.paysim.base.StepActionProfile;
 import org.paysim.paysim.base.ClientActionProfile;
 import org.paysim.paysim.base.Transaction;
@@ -20,7 +23,8 @@ public class Output {
     public static final int PRECISION_OUTPUT = 2;
     public static final String OUTPUT_SEPARATOR = ",", EOL_CHAR = System.lineSeparator();
     private static String filenameGlobalSummary, filenameParameters, filenameSummary, filenameRawLog,
-            filenameStepAggregate, filenameClientProfiles, filenameFraudsters;
+            filenameStepAggregate, filenameClientProfiles, filenameFraudsters,
+            filenameBanks, filenameClients, filenameMerchants;
 
     public static void incrementalWriteRawLog(int step, ArrayList<Transaction> transactions) {
         String rawLogHeader = "step,action,amount,nameOrig,oldBalanceOrig,newBalanceOrig,nameDest,oldBalanceDest,newBalanceDest,isFraud,isFlaggedFraud,isUnauthorizedOverdraft";
@@ -62,13 +66,61 @@ public class Output {
 
 
     public static void writeFraudsters(ArrayList<Fraudster> fraudsters) {
-        String fraudsterHeader = "name,nbVictims,profit";
+        String fraudsterHeader = "name,nbVictims,profit,bank";
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filenameFraudsters));
             writer.write(fraudsterHeader);
             writer.newLine();
             for (Fraudster f : fraudsters) {
                 writer.write(f.toString());
+                writer.newLine();
+            }
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeBanks(ArrayList<Bank> banks) {
+        String bankHeader = "name";
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filenameBanks));
+            writer.write(bankHeader);
+            writer.newLine();
+            for (Bank b : banks) {
+                writer.write(b.toString());
+                writer.newLine();
+            }
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeClients(ArrayList<Client> clients) {
+        String clientHeader = "name,bank,isFraud";
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filenameClients));
+            writer.write(clientHeader);
+            writer.newLine();
+            for (Client c : clients) {
+                writer.write(c.toString());
+                writer.newLine();
+            }
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeMerchants(ArrayList<Merchant> merchants) {
+        String merchantHeader = "name,bank";
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filenameMerchants));
+            writer.write(merchantHeader);
+            writer.newLine();
+            for (Merchant m : merchants) {
+                writer.write(m.toString());
                 writer.newLine();
             }
             writer.close();
@@ -193,5 +245,8 @@ public class Output {
         filenameStepAggregate = outputBaseString + "_aggregatedTransactions.csv";
         filenameClientProfiles = outputBaseString + "_clientsProfiles.csv";
         filenameFraudsters = outputBaseString + "_fraudsters.csv";
+        filenameBanks = outputBaseString + "_banks.csv";
+        filenameClients = outputBaseString + "_clients.csv";
+        filenameMerchants = outputBaseString + "_merchants.csv";
     }
 }

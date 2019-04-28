@@ -14,9 +14,15 @@ public class Fraudster extends SuperActor implements Steppable {
     private static final String FRAUDSTER_IDENTIFIER = "C";
     private double profit = 0;
     private int nbVictims = 0;
+    private Bank bank;
 
     public Fraudster(String name) {
         super(FRAUDSTER_IDENTIFIER + name);
+    }
+
+    public Fraudster(PaySim paySim) {
+        this(paySim.generateId());
+        this.bank = paySim.pickRandomBank();
     }
 
     @Override
@@ -61,6 +67,7 @@ public class Fraudster extends SuperActor implements Steppable {
         properties.add(getName());
         properties.add(Integer.toString(nbVictims));
         properties.add(Output.fastFormatDouble(Output.PRECISION_OUTPUT, profit));
+        properties.add(bank.getName());
 
         return String.join(Output.OUTPUT_SEPARATOR, properties);
     }

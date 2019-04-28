@@ -1,11 +1,11 @@
 package org.paysim.paysim.actors;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import static java.lang.Math.max;
 
 import ec.util.MersenneTwisterFast;
+import org.paysim.paysim.output.Output;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.distribution.Binomial;
@@ -43,8 +43,7 @@ public class Client extends SuperActor implements Steppable {
     }
 
     public Client(PaySim paySim) {
-        super(CLIENT_IDENTIFIER + paySim.generateId());
-        this.bank = paySim.pickRandomBank();
+        this(CLIENT_IDENTIFIER + paySim.generateId(), paySim.pickRandomBank());
         this.clientProfile = new ClientProfile(paySim.pickNextClientProfile(), paySim.random);
         this.clientWeight = ((double) clientProfile.getClientTargetCount()) /  Parameters.stepsProfiles.getTotalTargetCount();
         this.initialBalance = BalancesClients.pickNextBalance(paySim.random);
@@ -371,5 +370,16 @@ public class Client extends SuperActor implements Steppable {
         double randomizedMeanTransaction = random.nextGaussian() * stdTransaction + expectedAvgTransaction;
 
         return BalancesClients.getOverdraftLimit(randomizedMeanTransaction);
+    }
+
+    @Override
+    public String toString() {
+        ArrayList<String> properties = new ArrayList<>();
+
+        properties.add(getName());
+        properties.add(Objects.isNull(bank) ? "" : bank.getName());
+        properties.add(String.valueOf(isFraud() ? 1 : 0));
+
+        return String.join(Output.OUTPUT_SEPARATOR, properties);
     }
 }

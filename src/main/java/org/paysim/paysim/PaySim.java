@@ -117,26 +117,26 @@ public class PaySim extends SimState {
     private void initActors() {
         System.out.println("Init - Seed " + seed());
 
+        //Add the banks
+        System.out.println("NbBanks: " + Parameters.nbBanks);
+        for (int i = 0; i < Parameters.nbBanks; i++) {
+            Bank b = new Bank(generateId());
+            banks.add(b);
+        }
+
         //Add the merchants
         System.out.println("NbMerchants: " + (int) (Parameters.nbMerchants * Parameters.multiplier));
         for (int i = 0; i < Parameters.nbMerchants * Parameters.multiplier; i++) {
-            Merchant m = new Merchant(generateId());
+            Merchant m = new Merchant(this);
             merchants.add(m);
         }
 
         //Add the fraudsters
         System.out.println("NbFraudsters: " + (int) (Parameters.nbFraudsters * Parameters.multiplier));
         for (int i = 0; i < Parameters.nbFraudsters * Parameters.multiplier; i++) {
-            Fraudster f = new Fraudster(generateId());
+            Fraudster f = new Fraudster(this);
             fraudsters.add(f);
             schedule.scheduleRepeating(f);
-        }
-
-        //Add the banks
-        System.out.println("NbBanks: " + Parameters.nbBanks);
-        for (int i = 0; i < Parameters.nbBanks; i++) {
-            Bank b = new Bank(generateId());
-            banks.add(b);
         }
 
         //Add the clients
@@ -170,6 +170,9 @@ public class PaySim extends SimState {
 
     public void finish() {
         Output.writeFraudsters(fraudsters);
+        Output.writeBanks(banks);
+        Output.writeClients(clients);
+        Output.writeMerchants(merchants);
         Output.writeClientsProfiles(countProfileAssignment, (int) (Parameters.nbClients * Parameters.multiplier));
         Output.writeSummarySimulation(this);
     }
